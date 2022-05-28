@@ -10,6 +10,7 @@ import { ImBooks } from "react-icons/im";
 //   BsJournalBookmarkFill,
 // } from "react-icons/bs";
 import styled from "styled-components";
+import { NavLink } from "react-router-dom";
 
 const Header = () => {
   //   const [drop, setDrop] = useState(false);
@@ -20,24 +21,24 @@ const Header = () => {
   return (
     <Container>
       <Wrapper>
-        <Logo>
+        <Logo to="/diary">
           {" "}
           <LogoIcon /> Dya.
         </Logo>
 
         <Navigate>
-          <span>
+          <Nav to="/newdiary">
             {" "}
             <RiAddCircleLine />
-          </span>
-          <span>
+          </Nav>
+          <Nav to="/favorite">
             {" "}
             <AiFillHeart />{" "}
-          </span>
-          <span>
+          </Nav>
+          <Nav to="/">
             {" "}
             <MdAccountCircle />{" "}
-          </span>
+          </Nav>
         </Navigate>
         {/* <DropDown>
           <Dr onClick={toggleDrop}>{drop ? <DropIcon2 /> : <DropIcon />}</Dr>
@@ -85,7 +86,9 @@ const Wrapper = styled.div`
     width: 85%;
   }
 `;
-const Logo = styled.div`
+const Logo = styled(NavLink)`
+  text-decoration: none;
+  color: #fff;
   font-size: 20px;
   font-weight: 900;
   display: flex;
@@ -104,22 +107,27 @@ const Navigate = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
 
-  span {
-    height: 35px;
-    width: 35px;
-    /* background-color: blue; */
-    font-size: 25px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    transition: all 350ms;
-    cursor: pointer;
+const Nav = styled(NavLink)`
+  height: 35px;
+  width: 35px;
+  /* background-color: blue; */
+  font-size: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  transition: all 350ms;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  :hover {
+    background-color: #ff9505;
+  }
 
-    :hover {
-      background-color: #ff9505;
-    }
+  &.active {
+    background-color: #ff9505;
   }
 `;
 
