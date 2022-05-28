@@ -74,6 +74,7 @@ const SignUp = () => {
               </NotUp>
             </SignUpHold>
           )}
+          <br />
         </Card>
       </Wrapper>
     </Container>
@@ -107,7 +108,7 @@ const Card = styled.div`
   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
     rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   width: 500px;
-  min-height: 550px;
+  /* min-height: 550px; */
   border-radius: 5px;
   display: flex;
   flex-direction: column;
@@ -122,6 +123,7 @@ const Card = styled.div`
 
 const MainTitle = styled.div`
   text-align: center;
+  margin-top: 20px;
 `;
 const Title = styled.div`
   font-size: 40px;

@@ -1,13 +1,11 @@
 import React from "react";
-import { AiOutlineHeart, AiTwotoneDelete } from "react-icons/ai";
-import { BiEdit } from "react-icons/bi";
-import { NavLink } from "react-router-dom";
+import { BsFillHeartFill } from "react-icons/bs";
 import styled from "styled-components";
 
-const Home = () => {
+const Favorite = () => {
   return (
     <Container>
-      <h1>All Diary List</h1>
+      <h1>Your Favorite List</h1>
       <Wrapper>
         <DiaryHold>
           <DiaryCard>
@@ -33,20 +31,12 @@ const Home = () => {
               within a Web browser.
             </Contents>
             <PostedEdit>
-              <AgoPost>2 sec ago</AgoPost>
+              <AgoPost>.</AgoPost>
               <OtherMethods>
-                <Icon1>
+                <span>
                   {" "}
-                  <AiOutlineHeart />{" "}
-                </Icon1>
-                <Icon2 to="/updatediary/jjwh34okw">
-                  {" "}
-                  <BiEdit />{" "}
-                </Icon2>
-                <Icon3>
-                  {" "}
-                  <AiTwotoneDelete />{" "}
-                </Icon3>
+                  <BsFillHeartFill />{" "}
+                </span>
               </OtherMethods>
             </PostedEdit>
           </DiaryCard>
@@ -56,7 +46,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Favorite;
 
 const Container = styled.div`
   font-family: poppins;
@@ -174,49 +164,10 @@ const AgoPost = styled.div`
   color: #aaa;
 `;
 const OtherMethods = styled.div`
-  width: 100px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   span {
-    height: 30px;
     cursor: pointer;
-    width: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-    border-radius: 30px;
+    font-size: 30px;
     transition: all 350ms;
-  }
-`;
-
-const Icon1 = styled.span`
-  :hover {
-    background-color: gold;
-    color: #fff;
-  }
-`;
-const Icon2 = styled(NavLink)`
-  text-decoration: none;
-  height: 30px;
-  cursor: pointer;
-  width: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  border-radius: 30px;
-  transition: all 350ms;
-  color: #000;
-  :hover {
-    background-color: lightblue;
-    color: #fff;
-  }
-`;
-const Icon3 = styled.span`
-  :hover {
-    background-color: red;
-    color: #fff;
+    color: red;
   }
 `;
