@@ -3,21 +3,12 @@ import { RiAddCircleLine } from "react-icons/ri";
 import { AiFillHeart } from "react-icons/ai";
 import { MdAccountCircle } from "react-icons/md";
 import { ImBooks } from "react-icons/im";
-// import { GoSignIn } from "react-icons/go";
-// import {
-//   BsHeartFill,
-//   BsJournalBookmark,
-//   BsJournalBookmarkFill,
-// } from "react-icons/bs";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Header = () => {
-  //   const [drop, setDrop] = useState(false);
-
-  //   const toggleDrop = () => {
-  //     setDrop(!drop);
-  //   };
+  const userData = useSelector((state) => state.currentUser);
   return (
     <Container>
       <Wrapper>
@@ -39,32 +30,30 @@ const Header = () => {
             {" "}
             <MdAccountCircle />{" "}
           </Nav>
+          <Avatar>
+            <img src={userData?.avatar} alt="" />
+          </Avatar>
         </Navigate>
-        {/* <DropDown>
-          <Dr onClick={toggleDrop}>{drop ? <DropIcon2 /> : <DropIcon />}</Dr>
-
-          {drop ? (
-            <DropCtr>
-              <DropCtrWrap>
-                <NavHold>
-                  {" "}
-                  <GoSignIn style={{ margin: "0 7px" }} /> <span>Sign In</span>{" "}
-                </NavHold>
-                <NavHold>
-                  {" "}
-                  <BsHeartFill style={{ margin: "0 7px" }} />{" "}
-                  <span>Favorite List</span>{" "}
-                </NavHold>
-              </DropCtrWrap>
-            </DropCtr>
-          ) : null}
-        </DropDown> */}
       </Wrapper>
     </Container>
   );
 };
 
 export default Header;
+
+const Avatar = styled.div`
+  height: 30px;
+  width: 30px;
+  border-radius: 200px;
+  border: 2px solid gray;
+
+  img {
+    height: 100%;
+    width: 100%;
+    border-radius: 200px;
+    object-fit: cover;
+  }
+`;
 
 const Container = styled.div`
   height: 70px;

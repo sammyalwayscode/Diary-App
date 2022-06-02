@@ -1,87 +1,192 @@
 import React, { useState } from "react";
 import { ImBooks } from "react-icons/im";
 import styled from "styled-components";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+import swal from "sweetalert";
+import { NavLink } from "react-router-dom";
+import Loading from "../LoadState";
+import HashLoader from "react-spinners/HashLoader";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-  const [sign, setSign] = useState(false);
-  const signChange = () => {
-    setSign(!sign);
+  const [image, setImage] = useState("/avatar.gif");
+  const [avatar, setAvatar] = useState("");
+  let [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const loadChange = () => {
+    setLoading(true);
   };
+
+  console.log(loading);
+
+  const formSchema = yup.object().shape({
+    userName: yup.string().required("Please Enter Your Username"),
+    email: yup.string().email().required("email needed to complet process"),
+    password: yup.string().required("Password field is Required"),
+    confirm: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Please re-confirm your password"),
+  });
+
+  const {
+    register,
+    // reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(formSchema),
+  });
+
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    const save = URL.createObjectURL(file);
+    setImage(save);
+    setAvatar(file);
+  };
+
+  const onSummit = handleSubmit(async (value) => {
+    console.log(value);
+    const { userName, email, password } = value;
+
+    const mainURL = "http://localhost:2120";
+    const URL = `${mainURL}/api/diary/user/signup`;
+
+    const formData = new FormData();
+    formData.append("userName", userName);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("avatar", avatar);
+
+    const config = {
+      "content-type": "multipart/form-data",
+      onUploadProgress: (ProgressEvent) => {
+        const { loaded, total } = ProgressEvent;
+        const percent = Math.floor((loaded * 100) / total);
+        console.log(percent);
+      },
+    };
+
+    await axios.post(URL, formData, config).then((res) => {
+      console.log("Error Data:", res);
+    });
+
+    setLoading(false);
+
+    swal({
+      title: `Welcome ${userName}`,
+      text: "You just Signeg Up Please proceed to Sign In",
+      icon: "success",
+      button: "Sign In Now",
+    });
+    navigate("/signin");
+  });
+
   return (
-    <Container>
-      <Wrapper>
-        <Card>
-          <MainTitle>
-            <Title>
-              <ImBooks /> DYA.
-            </Title>
+    <Ddiv>
+      {loading ? (
+        <Div className="sweet-loading">
+          <HashLoader loading={loading} size={100} />
+        </Div>
+      ) : null}
 
-            <SubTitle>
-              Best diary app, concept by <strong>OLORUNDA SAMUEL</strong>{" "}
-            </SubTitle>
-          </MainTitle>
+      <Container>
+        <Wrapper>
+          <Card>
+            <MainTitle>
+              <Title>
+                <ImBooks /> DYA.
+              </Title>
 
-          {sign ? (
-            <SignInHold>
-              <InputCtrl>
-                <span>Your Email</span>
-                <input placeholder="Enter Your Email Address" />
-              </InputCtrl>
-              <InputCtrl>
-                <span>Password</span>
-                <input placeholder="Enter Your Password" />
-              </InputCtrl>
-              <Button>
-                <button>Sign In</button>
-              </Button>
-              <NotUp>
-                Don't have an Account???{" "}
-                <span onClick={signChange}>Sign Up</span>
-              </NotUp>
-            </SignInHold>
-          ) : (
-            <SignUpHold>
+              <SubTitle>
+                Best diary app, concept by <strong>OLORUNDA SAMUEL</strong>{" "}
+              </SubTitle>
+            </MainTitle>
+
+            <SignUpHold onSubmit={onSummit} type="multipart/form-data">
               <ImageHolder>
                 <PrevImgDiv>
-                  <img src="" alt="" />
+                  <img src={image} alt="" />
                 </PrevImgDiv>
                 <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
-                <ImageInput id="pix" type="file" accept="image/*" />
+                <ImageInput
+                  onChange={handleImage}
+                  id="pix"
+                  type="file"
+                  accept="image/*"
+                />
               </ImageHolder>
 
               <InputCtrl>
                 <span>User Name</span>
-                <input placeholder="Enter Your UserName" />
+                <input
+                  placeholder="Enter Your UserName"
+                  {...register("userName")}
+                />
+                <Error> {errors.message && errors?.message.username} </Error>
               </InputCtrl>
               <InputCtrl>
                 <span>Your Email</span>
-                <input placeholder="Enter Your Email Address" />
+                <input
+                  placeholder="Enter Your Email Address"
+                  {...register("email")}
+                />
+                <Error> {errors.message && errors?.message.email} </Error>
               </InputCtrl>
               <InputCtrl>
                 <span>Password</span>
-                <input placeholder="Create a Super Meroable Password" />
+                <input
+                  placeholder="Create a Super Meroable Password"
+                  {...register("password")}
+                />
+                <Error> {errors.message && errors?.message.password} </Error>
               </InputCtrl>
               <InputCtrl>
                 <span>Confirm Password</span>
-                <input placeholder="Confirm Your Password" />
+                <input
+                  placeholder="Confirm Your Password"
+                  {...register("confirm")}
+                />
+                <Error> {errors.message && errors.message?.confirm} </Error>
               </InputCtrl>
               <Button>
-                <button>Sign Up</button>
+                <button onClick={loadChange} type="submit">
+                  Sign Up
+                </button>
               </Button>
               <NotUp bg>
                 Already have an Account???{" "}
-                <span onClick={signChange}>Sign In</span>
+                <NavLink style={{ textDecoration: "none" }} to="/signin">
+                  <span>Sign In</span>
+                </NavLink>
               </NotUp>
             </SignUpHold>
-          )}
-          <br />
-        </Card>
-      </Wrapper>
-    </Container>
+
+            <br />
+          </Card>
+        </Wrapper>
+      </Container>
+    </Ddiv>
   );
 };
 
 export default SignUp;
+
+const Ddiv = styled.div``;
+
+const Div = styled.div`
+  height: 90vh;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 10;
+`;
 
 const Container = styled.div`
   min-height: 89vh;
@@ -91,6 +196,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   font-family: poppins;
+  position: relative;
 `;
 const Wrapper = styled.div`
   width: 1200px;
@@ -136,13 +242,14 @@ const SubTitle = styled.div`
   font-size: x-small;
   margin-top: -10px;
 `;
-const SignUpHold = styled.div``;
+const SignUpHold = styled.form``;
 const PrevImgDiv = styled.div`
   height: 80px;
   width: 80px;
-  background-color: aqua;
+  background-color: gray;
   border-radius: 50%;
   margin: 10px 0;
+  border: 1px solid gray;
 
   img {
     height: 100%;
@@ -192,6 +299,13 @@ const InputCtrl = styled.div`
     font-family: poppins;
   }
 `;
+
+const Error = styled.div`
+  font-size: x-small;
+  font-weight: bold;
+  color: red;
+`;
+
 const Button = styled.div`
   display: flex;
   justify-content: center;
@@ -217,5 +331,3 @@ const NotUp = styled.div`
     cursor: pointer;
   }
 `;
-
-const SignInHold = styled.div``;

@@ -6,6 +6,8 @@ import SignUp from "./Components/Auth/SignUp";
 import CreateDiary from "./Components/Home/CreateDiary";
 import EditDiary from "./Components/Home/EditDiary";
 import Favorite from "./Components/Home/Favorite";
+import Signin from "./Components/Auth/SignIn";
+import LoadState from "./Components/LoadState";
 
 const App = () => {
   return (
@@ -14,10 +16,12 @@ const App = () => {
         <Header />
         <Routes>
           <Route path="/" element={<SignUp />} />
+          <Route path="/signin" element={<Signin />} />
           <Route path="/diary" element={<Home />} />
           <Route path="/newdiary" element={<CreateDiary />} />
           <Route path="/updatediary/:id" element={<EditDiary />} />
           <Route path="/favorite" element={<Favorite />} />
+          {/* <Route path="/load" element={<LoadState />} /> */}
         </Routes>
       </BrowserRouter>
     </div>
