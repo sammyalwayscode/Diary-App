@@ -1,38 +1,66 @@
 import React from "react";
 import { RiAddCircleLine } from "react-icons/ri";
-import { AiFillHeart } from "react-icons/ai";
+import { AiFillHeart, AiFillWallet } from "react-icons/ai";
 import { MdAccountCircle } from "react-icons/md";
 import { ImBooks } from "react-icons/im";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { signOut } from "../Global/GlobalState";
+import Private from "./PrivateRoute";
+import { BsBookshelf } from "react-icons/bs";
 
 const Header = () => {
   const userData = useSelector((state) => state.currentUser);
+  const dispatch = useDispatch();
   return (
     <Container>
       <Wrapper>
-        <Logo to="/diary">
+        <Logo to="/">
           {" "}
           <LogoIcon /> Dya.
         </Logo>
 
         <Navigate>
-          <Nav to="/newdiary">
-            {" "}
-            <RiAddCircleLine />
-          </Nav>
-          <Nav to="/favorite">
-            {" "}
-            <AiFillHeart />{" "}
-          </Nav>
-          <Nav to="/">
-            {" "}
-            <MdAccountCircle />{" "}
-          </Nav>
-          <Avatar>
-            <img src={userData?.avatar} alt="" />
-          </Avatar>
+          {userData ? (
+            <Private>
+              <Nav to="/diary">
+                {" "}
+                <AiFillWallet />
+              </Nav>
+            </Private>
+          ) : null}
+          {userData ? (
+            <Private>
+              <Nav to="/newdiary">
+                {" "}
+                <RiAddCircleLine />
+              </Nav>
+            </Private>
+          ) : null}
+
+          {userData ? (
+            <Nav to="/favorite">
+              {" "}
+              <AiFillHeart />{" "}
+            </Nav>
+          ) : null}
+
+          {userData ? (
+            <Avatar
+              to="/"
+              onClick={() => {
+                dispatch(signOut());
+              }}
+            >
+              <img src={userData?.avatar} alt="" />
+            </Avatar>
+          ) : (
+            <Nav to="/signup">
+              {" "}
+              <MdAccountCircle />{" "}
+            </Nav>
+          )}
         </Navigate>
       </Wrapper>
     </Container>
@@ -41,11 +69,12 @@ const Header = () => {
 
 export default Header;
 
-const Avatar = styled.div`
+const Avatar = styled(NavLink)`
   height: 30px;
   width: 30px;
   border-radius: 200px;
   border: 2px solid gray;
+  cursor: pointer;
 
   img {
     height: 100%;

@@ -1,12 +1,79 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { ImBooks } from "react-icons/im";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import swal from "sweetalert";
+import { useNavigate } from "react-router-dom";
 
 const CreateDiary = () => {
+  const user = useSelector((state) => state.currentUser);
+  const id = user._id;
+  const dia = user.diary;
+  console.log(id);
+  console.log(dia);
+
+  const navigate = useNavigate();
+
+  const [image, setImage] = useState("/diary.jpg");
+  const [avatar, setAvatar] = useState("");
+
+  const formSchema = yup.object().shape({
+    title: yup.string().required("This FFiled Cannot Be Empty"),
+    message: yup.string().required("This Field Cannot Be Empty"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(formSchema),
+  });
+
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    const save = URL.createObjectURL(file);
+    setImage(save);
+    setAvatar(file);
+  };
+
+  const onSubmit = handleSubmit(async (value) => {
+    console.log(value);
+    const { message, title } = value;
+    const mainURL = "http://localhost:2120";
+    const URL = `${mainURL}/api/userdiary/diary/${id}`;
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("message", message);
+    formData.append("image", avatar);
+
+    const config = {
+      "content-type": "multipart/form-data",
+      onUploadProgress: (ProgressEvent) => {
+        const { loaded, total } = ProgressEvent;
+        const precent = Math.floor((loaded * 100) / total);
+        console.log(precent);
+      },
+    };
+
+    await axios.post(URL, formData, config).then((res) => {
+      console.log("Data: ", res);
+    });
+
+    swal("Great! 😁", "Diary Sucessfully Created", "success");
+
+    navigate("/diary");
+  });
+
   return (
     <Container>
       <Wrapper>
-        <Card>
+        <Card onSubmit={onSubmit}>
           <MainTitle>
             <Title>
               <ImBooks /> DYA.
@@ -15,23 +82,36 @@ const CreateDiary = () => {
           <CreateHold>
             <ImageHolder>
               <PrevImgDiv>
-                <img src="" alt="" />
+                <img src={image} alt="" />
               </PrevImgDiv>
               <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
-              <ImageInput id="pix" type="file" accept="image/*" />
+              <ImageInput
+                id="pix"
+                type="file"
+                accept="image/*"
+                onChange={handleImage}
+              />
             </ImageHolder>
 
             <InputCtrl>
               <span>Title</span>
-              <input placeholder="What's the title of your notes" />
+              <input
+                placeholder="What's the title of your notes"
+                {...register("title")}
+              />
+              <Error> {errors.message && errors.mesaage.title} </Error>
             </InputCtrl>
             <InputCtrl>
               <span>Notes</span>
-              <textarea placeholder="Write your Notes Here" />
+              <textarea
+                placeholder="Write your Notes Here"
+                {...register("message")}
+              />
+              <Error> {errors.message && errors.mesaage.message} </Error>
             </InputCtrl>
           </CreateHold>
           <Button>
-            <button>Create Diary</button>
+            <button type="submit">Create Diary</button>
           </Button>
         </Card>
       </Wrapper>
@@ -62,7 +142,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const Card = styled.div`
+const Card = styled.form`
   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
     rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   width: 500px;
@@ -152,6 +232,13 @@ const InputCtrl = styled.div`
     resize: none;
   }
 `;
+
+const Error = styled.div`
+  font-size: x-small;
+  font-weight: bold;
+  color: red;
+`;
+
 const Button = styled.div`
   display: flex;
   justify-content: center;

@@ -7,7 +7,7 @@ import CreateDiary from "./Components/Home/CreateDiary";
 import EditDiary from "./Components/Home/EditDiary";
 import Favorite from "./Components/Home/Favorite";
 import Signin from "./Components/Auth/SignIn";
-import LoadState from "./Components/LoadState";
+import LandingPage from "./Components/Home/LandingPage";
 
 const App = () => {
   return (
@@ -15,13 +15,13 @@ const App = () => {
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route path="/" element={<SignUp />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/diary" element={<Home />} />
           <Route path="/newdiary" element={<CreateDiary />} />
           <Route path="/updatediary/:id" element={<EditDiary />} />
           <Route path="/favorite" element={<Favorite />} />
-          {/* <Route path="/load" element={<LoadState />} /> */}
         </Routes>
       </BrowserRouter>
     </div>

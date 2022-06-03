@@ -1,46 +1,49 @@
+import moment from "moment";
 import React from "react";
 import { BsFillHeartFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import { removeFavorite } from "../Global/GlobalState";
 
 const Favorite = () => {
+  const memo = useSelector((state) => state.favorite);
+  const dispatch = useDispatch();
   return (
     <Container>
       <h1>Your Favorite List</h1>
       <Wrapper>
-        <DiaryHold>
-          <DiaryCard>
-            <Dated>Today January 22</Dated>
-            <BreakDay>
-              <hr />
-              <span> Saturday</span>
-              <hr />
-            </BreakDay>
-            <TitlePix>
-              <ImageDiv>
-                <img src="/prod.jpg" alt="" />
-              </ImageDiv>
-              <Title>Best Day So Far</Title>
-            </TitlePix>
-            <Contents>
-              Mobile app development is the act or process by which a mobile app
-              is developed for mobile devices, such as personal digital
-              assistants, enterprise digital assistants or mobile phones. These
-              applications can be pre-installed on phones during manufacturing
-              platforms, or delivered as web applications using server-side or
-              client-side processing to provide an "application-like" experience
-              within a Web browser.
-            </Contents>
-            <PostedEdit>
-              <AgoPost>.</AgoPost>
-              <OtherMethods>
-                <span>
-                  {" "}
-                  <BsFillHeartFill />{" "}
-                </span>
-              </OtherMethods>
-            </PostedEdit>
-          </DiaryCard>
-        </DiaryHold>
+        {memo?.map((props) => (
+          <DiaryHold key={props._id}>
+            <DiaryCard>
+              <Dated>{moment(props.createdAt).format("MMMM Do YYYY")}</Dated>
+              <BreakDay>
+                <hr />
+                <span> {moment(props.createdAt).format("dddd")}</span>
+                <hr />
+              </BreakDay>
+              <TitlePix>
+                <ImageDiv>
+                  <img src={props.image} alt="" />
+                </ImageDiv>
+                <Title>{props.title}</Title>
+              </TitlePix>
+              <Contents>{props.message}</Contents>
+              <PostedEdit>
+                <AgoPost>.</AgoPost>
+                <OtherMethods
+                  onClick={() => {
+                    dispatch(removeFavorite(props));
+                  }}
+                >
+                  <span>
+                    {" "}
+                    <BsFillHeartFill />{" "}
+                  </span>
+                </OtherMethods>
+              </PostedEdit>
+            </DiaryCard>
+          </DiaryHold>
+        ))}
       </Wrapper>
     </Container>
   );
