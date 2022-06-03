@@ -1,56 +1,87 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { AiOutlineHeart, AiTwotoneDelete } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
+import { addFavorite, addMomery } from "../Global/GlobalState";
+import moment from "moment";
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.currentUser);
+  const memo = useSelector((state) => state.memories);
+
+  const id = user._id;
+  const diy = user.diary;
+  console.log(diy);
+  const [getData, setGetData] = useState([]);
+
+  const onGetData = async () => {
+    try {
+      const mainURL = "http://localhost:2120";
+      const URL = `${mainURL}/api/userdiary/diary/${id}`;
+
+      await axios.get(URL).then((res) => {
+        // setGetData(res.data.data.diary);
+        dispatch(addMomery(res.data.data.diary));
+      });
+
+      // console.log(getData);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    onGetData();
+  }, []);
+
   return (
     <Container>
       <h1>All Diary List</h1>
       <Wrapper>
-        <DiaryHold>
-          <DiaryCard>
-            <Dated>Today January 22</Dated>
-            <BreakDay>
-              <hr />
-              <span> Saturday</span>
-              <hr />
-            </BreakDay>
-            <TitlePix>
-              <ImageDiv>
-                <img src="/prod.jpg" alt="" />
-              </ImageDiv>
-              <Title>Best Day So Far</Title>
-            </TitlePix>
-            <Contents>
-              Mobile app development is the act or process by which a mobile app
-              is developed for mobile devices, such as personal digital
-              assistants, enterprise digital assistants or mobile phones. These
-              applications can be pre-installed on phones during manufacturing
-              platforms, or delivered as web applications using server-side or
-              client-side processing to provide an "application-like" experience
-              within a Web browser.
-            </Contents>
-            <PostedEdit>
-              <AgoPost>2 sec ago</AgoPost>
-              <OtherMethods>
-                <Icon1>
-                  {" "}
-                  <AiOutlineHeart />{" "}
-                </Icon1>
-                <Icon2 to="/updatediary/jjwh34okw">
-                  {" "}
-                  <BiEdit />{" "}
-                </Icon2>
-                <Icon3>
-                  {" "}
-                  <AiTwotoneDelete />{" "}
-                </Icon3>
-              </OtherMethods>
-            </PostedEdit>
-          </DiaryCard>
-        </DiaryHold>
+        {memo?.map((props) => (
+          <DiaryHold key={props._id}>
+            <DiaryCard>
+              <Dated> {moment(props.createdAt).format("MMMM Do YYYY")} </Dated>
+              <BreakDay>
+                <hr />
+                <span> {moment(props.createdAt).format("dddd")} </span>
+                <hr />
+              </BreakDay>
+              <TitlePix>
+                <ImageDiv>
+                  <img src={props.image} alt="" />
+                </ImageDiv>
+                <Title> {props.title} </Title>
+              </TitlePix>
+              <Contents>{props.message}</Contents>
+              <PostedEdit>
+                <AgoPost> {moment(props.createdAt).fromNow()} </AgoPost>
+                <OtherMethods>
+                  <Icon1
+                    onClick={() => {
+                      dispatch(addFavorite(props));
+                    }}
+                  >
+                    {" "}
+                    <AiOutlineHeart />{" "}
+                  </Icon1>
+                  <Icon2 to="/updatediary/jjwh34okw">
+                    {" "}
+                    <BiEdit />{" "}
+                  </Icon2>
+                  <Icon3>
+                    {" "}
+                    <AiTwotoneDelete />{" "}
+                  </Icon3>
+                </OtherMethods>
+              </PostedEdit>
+            </DiaryCard>
+          </DiaryHold>
+        ))}
       </Wrapper>
     </Container>
   );
@@ -84,6 +115,7 @@ const DiaryHold = styled.div`
   align-items: center;
   margin: 30px 0;
   background-color: #fafafa;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 `;
 const DiaryCard = styled.div`
   width: 94%;
