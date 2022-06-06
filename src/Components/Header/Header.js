@@ -8,7 +8,7 @@ import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../Global/GlobalState";
 import Private from "./PrivateRoute";
-import { BsBookshelf } from "react-icons/bs";
+import swal from "sweetalert";
 
 const Header = () => {
   const userData = useSelector((state) => state.currentUser);
@@ -27,6 +27,7 @@ const Header = () => {
               <Nav to="/diary">
                 {" "}
                 <AiFillWallet />
+                <small>Diaries</small>
               </Nav>
             </Private>
           ) : null}
@@ -35,6 +36,7 @@ const Header = () => {
               <Nav to="/newdiary">
                 {" "}
                 <RiAddCircleLine />
+                <small>Create</small>
               </Nav>
             </Private>
           ) : null}
@@ -42,7 +44,7 @@ const Header = () => {
           {userData ? (
             <Nav to="/favorite">
               {" "}
-              <AiFillHeart />{" "}
+              <AiFillHeart /> <small>Favourite</small>
             </Nav>
           ) : null}
 
@@ -51,6 +53,7 @@ const Header = () => {
               to="/"
               onClick={() => {
                 dispatch(signOut());
+                swal("Logged Out 😒", "Log Out Sucessful", "success");
               }}
             >
               <img src={userData?.avatar} alt="" />
@@ -58,7 +61,7 @@ const Header = () => {
           ) : (
             <Nav to="/signup">
               {" "}
-              <MdAccountCircle />{" "}
+              <MdAccountCircle /> <small>Log in</small>
             </Nav>
           )}
         </Navigate>
@@ -120,7 +123,7 @@ const LogoIcon = styled(ImBooks)`
 `;
 
 const Navigate = styled.div`
-  width: 130px;
+  width: 200px;
   /* background-color: red; */
   display: flex;
   justify-content: space-between;
@@ -133,6 +136,7 @@ const Nav = styled(NavLink)`
   /* background-color: blue; */
   font-size: 25px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-radius: 50%;
@@ -140,12 +144,15 @@ const Nav = styled(NavLink)`
   text-decoration: none;
   color: #fff;
   cursor: pointer;
+  small {
+    font-size: x-small;
+  }
   :hover {
-    background-color: #ff9505;
+    color: #ff9505;
   }
 
   &.active {
-    background-color: #ff9505;
+    color: #ff9505;
   }
 `;
 

@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import swal from "sweetalert";
+import HashLoader from "react-spinners/HashLoader";
 import { useNavigate } from "react-router-dom";
 
 const CreateDiary = () => {
@@ -20,6 +21,11 @@ const CreateDiary = () => {
 
   const [image, setImage] = useState("/diary.jpg");
   const [avatar, setAvatar] = useState("");
+
+  let [loading, setLoading] = useState(false);
+  const loadChange = () => {
+    setLoading(true);
+  };
 
   const formSchema = yup.object().shape({
     title: yup.string().required("This FFiled Cannot Be Empty"),
@@ -44,7 +50,7 @@ const CreateDiary = () => {
   const onSubmit = handleSubmit(async (value) => {
     console.log(value);
     const { message, title } = value;
-    const mainURL = "http://localhost:2120";
+    const mainURL = "https://sam-diary.herokuapp.com";
     const URL = `${mainURL}/api/userdiary/diary/${id}`;
 
     const formData = new FormData();
@@ -64,6 +70,14 @@ const CreateDiary = () => {
     await axios.post(URL, formData, config).then((res) => {
       console.log("Data: ", res);
     });
+    // .catch(
+    //   swal({
+    //     title: `A Error Occored`,
+    //     text: "Server Or NetWork Error",
+    //     icon: "error",
+    //   })
+    // );
+    setLoading(false);
 
     swal("Great! 😁", "Diary Sucessfully Created", "success");
 
@@ -71,55 +85,77 @@ const CreateDiary = () => {
   });
 
   return (
-    <Container>
-      <Wrapper>
-        <Card onSubmit={onSubmit}>
-          <MainTitle>
-            <Title>
-              <ImBooks /> DYA.
-            </Title>
-          </MainTitle>
-          <CreateHold>
-            <ImageHolder>
-              <PrevImgDiv>
-                <img src={image} alt="" />
-              </PrevImgDiv>
-              <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
-              <ImageInput
-                id="pix"
-                type="file"
-                accept="image/*"
-                onChange={handleImage}
-              />
-            </ImageHolder>
+    <>
+      {loading ? (
+        <Div className="sweet-loading">
+          <HashLoader loading={loading} size={100} />
+        </Div>
+      ) : null}
 
-            <InputCtrl>
-              <span>Title</span>
-              <input
-                placeholder="What's the title of your notes"
-                {...register("title")}
-              />
-              <Error> {errors.message && errors.mesaage.title} </Error>
-            </InputCtrl>
-            <InputCtrl>
-              <span>Notes</span>
-              <textarea
-                placeholder="Write your Notes Here"
-                {...register("message")}
-              />
-              <Error> {errors.message && errors.mesaage.message} </Error>
-            </InputCtrl>
-          </CreateHold>
-          <Button>
-            <button type="submit">Create Diary</button>
-          </Button>
-        </Card>
-      </Wrapper>
-    </Container>
+      <Container>
+        <Wrapper>
+          <Card onSubmit={onSubmit}>
+            <MainTitle>
+              <Title>
+                <ImBooks /> DYA.
+              </Title>
+            </MainTitle>
+            <CreateHold>
+              <ImageHolder>
+                <PrevImgDiv>
+                  <img src={image} alt="" />
+                </PrevImgDiv>
+                <small>Important!!!</small>
+                <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
+                <ImageInput
+                  id="pix"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImage}
+                />
+              </ImageHolder>
+
+              <InputCtrl>
+                <span>Title</span>
+                <input
+                  placeholder="What's the title of your notes"
+                  {...register("title")}
+                />
+                <Error> {errors.message && errors.mesaage.title} </Error>
+              </InputCtrl>
+              <InputCtrl>
+                <span>Notes</span>
+                <textarea
+                  placeholder="Write your Notes Here"
+                  {...register("message")}
+                />
+                <Error> {errors.message && errors.mesaage.message} </Error>
+              </InputCtrl>
+            </CreateHold>
+            <Button>
+              <button onClick={loadChange} type="submit">
+                Create Diary
+              </button>
+            </Button>
+          </Card>
+        </Wrapper>
+      </Container>
+    </>
   );
 };
 
 export default CreateDiary;
+
+const Div = styled.div`
+  height: 90vh;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 10;
+`;
 
 const Container = styled.div`
   min-height: 89vh;
@@ -210,6 +246,10 @@ const ImageHolder = styled.div`
   align-items: center;
   display: flex;
   flex-direction: column;
+  small {
+    color: red;
+    font-weight: 600;
+  }
 `;
 const InputCtrl = styled.div`
   display: flex;

@@ -3,6 +3,7 @@ import React from "react";
 import { BsFillHeartFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import swal from "sweetalert";
 import { removeFavorite } from "../Global/GlobalState";
 
 const Favorite = () => {
@@ -32,7 +33,22 @@ const Favorite = () => {
                 <AgoPost>.</AgoPost>
                 <OtherMethods
                   onClick={() => {
-                    dispatch(removeFavorite(props));
+                    swal({
+                      title: "Are you sure?",
+                      text: "Once deleted, you will not be able to recover this favorite file!",
+                      icon: "warning",
+                      buttons: true,
+                      dangerMode: true,
+                    }).then((willDelete) => {
+                      if (willDelete) {
+                        dispatch(removeFavorite(props));
+                        swal("Poof! Favorite file has been deleted!", {
+                          icon: "success",
+                        });
+                      } else {
+                        swal("Your favorite file is safe!");
+                      }
+                    });
                   }}
                 >
                   <span>
@@ -77,6 +93,7 @@ const DiaryHold = styled.div`
   align-items: center;
   margin: 30px 0;
   background-color: #fafafa;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 `;
 const DiaryCard = styled.div`
   width: 94%;

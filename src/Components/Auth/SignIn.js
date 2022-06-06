@@ -31,11 +31,11 @@ const Signin = () => {
   const onSummit = handleSubmit(async (value) => {
     console.log(value);
     const { email, password } = value;
-    const mainURL = "http://localhost:2120";
+    const mainURL = "https://sam-diary.herokuapp.com";
     const URL = `${mainURL}/api/diary/user/signin`;
 
     await axios.post(URL, { email, password }).then((res) => {
-      console.log(res.data.data);
+      // console.log(res.data.data);
       dispatch(createUser(res.data.data));
     });
 
@@ -75,6 +75,7 @@ const Signin = () => {
             <InputCtrl>
               <span>Password</span>
               <input
+                type="password"
                 placeholder="Enter Your Password"
                 {...register("password")}
               />

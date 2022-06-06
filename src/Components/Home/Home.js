@@ -1,12 +1,14 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { AiOutlineHeart, AiTwotoneDelete } from "react-icons/ai";
+import React, { useEffect } from "react";
+import { AiFillHeart, AiTwotoneDelete } from "react-icons/ai";
 import { BiEdit } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { addFavorite, addMomery } from "../Global/GlobalState";
 import moment from "moment";
+import swal from "sweetalert";
+import { GrAddCircle } from "react-icons/gr";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -16,11 +18,10 @@ const Home = () => {
   const id = user._id;
   const diy = user.diary;
   console.log(diy);
-  const [getData, setGetData] = useState([]);
 
   const onGetData = async () => {
     try {
-      const mainURL = "http://localhost:2120";
+      const mainURL = "https://sam-diary.herokuapp.com";
       const URL = `${mainURL}/api/userdiary/diary/${id}`;
 
       await axios.get(URL).then((res) => {
@@ -34,6 +35,10 @@ const Home = () => {
     }
   };
 
+  // const deleteDiary = () => {
+
+  // }
+
   useEffect(() => {
     onGetData();
   }, []);
@@ -42,52 +47,98 @@ const Home = () => {
     <Container>
       <h1>All Diary List</h1>
       <Wrapper>
-        {memo?.map((props) => (
-          <DiaryHold key={props._id}>
-            <DiaryCard>
-              <Dated> {moment(props.createdAt).format("MMMM Do YYYY")} </Dated>
-              <BreakDay>
-                <hr />
-                <span> {moment(props.createdAt).format("dddd")} </span>
-                <hr />
-              </BreakDay>
-              <TitlePix>
-                <ImageDiv>
-                  <img src={props.image} alt="" />
-                </ImageDiv>
-                <Title> {props.title} </Title>
-              </TitlePix>
-              <Contents>{props.message}</Contents>
-              <PostedEdit>
-                <AgoPost> {moment(props.createdAt).fromNow()} </AgoPost>
-                <OtherMethods>
-                  <Icon1
-                    onClick={() => {
-                      dispatch(addFavorite(props));
-                    }}
-                  >
+        {memo === null ? (
+          <NotContain>
+            <Nott>
+              <img src="/data.svg" alt="" />
+              <strong>
+                Empty Diary List, Click <GrAddCircle /> To Create Your Diary
+              </strong>
+            </Nott>
+          </NotContain>
+        ) : (
+          <>
+            {memo?.map((props) => (
+              <DiaryHold key={props._id}>
+                <DiaryCard>
+                  <Dated>
                     {" "}
-                    <AiOutlineHeart />{" "}
-                  </Icon1>
-                  <Icon2 to="/updatediary/jjwh34okw">
-                    {" "}
-                    <BiEdit />{" "}
-                  </Icon2>
-                  <Icon3>
-                    {" "}
-                    <AiTwotoneDelete />{" "}
-                  </Icon3>
-                </OtherMethods>
-              </PostedEdit>
-            </DiaryCard>
-          </DiaryHold>
-        ))}
+                    {moment(props.createdAt).format("MMMM Do YYYY")}{" "}
+                  </Dated>
+                  <BreakDay>
+                    <hr />
+                    <span> {moment(props.createdAt).format("dddd")} </span>
+                    <hr />
+                  </BreakDay>
+                  <TitlePix>
+                    <ImageDiv>
+                      <img src={props.image} alt="" />
+                    </ImageDiv>
+                    <Title> {props.title} </Title>
+                  </TitlePix>
+                  <Contents>{props.message}</Contents>
+                  <PostedEdit>
+                    <AgoPost> {moment(props.createdAt).fromNow()} </AgoPost>
+                    <OtherMethods>
+                      <Icon1
+                        onClick={() => {
+                          dispatch(addFavorite(props));
+                          swal(props.title, "Added to Favorite");
+                        }}
+                      >
+                        {" "}
+                        <AiFillHeart color="red" />{" "}
+                      </Icon1>
+                      <Icon2 to={`/updatediary/${props._id}`}>
+                        {" "}
+                        <BiEdit />{" "}
+                      </Icon2>
+                      <Icon3
+                        onClick={() => {
+                          swal(
+                            "Can't Preform Action",
+                            `Can't Delete ${props.title} now, Update Comming Soon`,
+                            "error"
+                          );
+                        }}
+                      >
+                        {" "}
+                        <AiTwotoneDelete />{" "}
+                      </Icon3>
+                    </OtherMethods>
+                  </PostedEdit>
+                </DiaryCard>
+              </DiaryHold>
+            ))}
+          </>
+        )}
       </Wrapper>
     </Container>
   );
 };
 
 export default Home;
+
+const NotContain = styled.div`
+  min-height: 70vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Nott = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  img {
+    height: 150px;
+    margin-bottom: 15px;
+  }
+  strong {
+    font-size: small;
+  }
+`;
 
 const Container = styled.div`
   font-family: poppins;
