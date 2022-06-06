@@ -52,7 +52,7 @@ const SignUp = () => {
     console.log(value);
     const { userName, email, password } = value;
 
-    const mainURL = "http://localhost:2120";
+    const mainURL = "https://sam-diary.herokuapp.com";
     const URL = `${mainURL}/api/diary/user/signup`;
 
     const formData = new FormData();
@@ -71,17 +71,24 @@ const SignUp = () => {
     };
 
     await axios.post(URL, formData, config).then((res) => {
-      console.log("Error Data:", res);
+      console.log("Data:", res);
     });
+    // .catch(
+    //   swal({
+    //     title: `A Error Occored`,
+    //     text: "Server Or NetWork Error",
+    //     icon: "error",
+    //   })
+    // );
 
     setLoading(false);
-
     swal({
       title: `Welcome ${userName}`,
       text: "You just Signeg Up Please proceed to Sign In",
       icon: "success",
       button: "Sign In Now",
     });
+
     navigate("/signin");
   });
 
@@ -139,6 +146,7 @@ const SignUp = () => {
               <InputCtrl>
                 <span>Password</span>
                 <input
+                  type="password"
                   placeholder="Create a Super Meroable Password"
                   {...register("password")}
                 />
@@ -147,6 +155,7 @@ const SignUp = () => {
               <InputCtrl>
                 <span>Confirm Password</span>
                 <input
+                  type="password"
                   placeholder="Confirm Your Password"
                   {...register("confirm")}
                 />

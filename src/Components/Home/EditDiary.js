@@ -1,37 +1,87 @@
 import React from "react";
 import styled from "styled-components";
 import { ImBooks } from "react-icons/im";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import swal from "sweetalert";
 
 const EditDiary = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  console.log(id);
+  const userId = useSelector((state) => state.currentUser);
+
+  const formSchema = yup.object().shape({
+    title: yup.string().required("This Field is Necessary"),
+    message: yup.string().required("This Field is Necessary"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(formSchema),
+  });
+
+  const onSubmit = handleSubmit(async (value) => {
+    console.log(value);
+    const { title, message } = value;
+    const mainURL = "https://sam-diary.herokuapp.com";
+    const URL = `${mainURL}/api/userdiary/diary/${userId._id}/${id}`;
+
+    await axios
+      .patch(URL, { title, message })
+      .then((res) => {
+        console.log("Edited", res);
+      })
+      .catch(() => {
+        console.log("Couldn't Edit");
+      });
+
+    swal("Great 👍", "Diary Updated Sucessfully", "success");
+
+    navigate("/diary");
+  });
+
   return (
     <Container>
       <Wrapper>
-        <Card>
+        <Card onSubmit={onSubmit}>
           <MainTitle>
             <Title>
               <ImBooks /> DYA.
             </Title>
           </MainTitle>
           <CreateHold>
-            <ImageHolder>
+            {/* <ImageHolder>
               <PrevImgDiv>
                 <img src="" alt="" />
               </PrevImgDiv>
               <ImageLabel htmlFor="pix">Update your Image</ImageLabel>
               <ImageInput id="pix" type="file" accept="image/*" />
-            </ImageHolder>
+            </ImageHolder> */}
 
             <InputCtrl>
               <span>Title</span>
-              <input placeholder="Update your Title" />
+              <input placeholder="Update your Title" {...register("title")} />
+              <Error> {errors.message && errors?.mesaage.title} </Error>
             </InputCtrl>
             <InputCtrl>
               <span>Notes</span>
-              <textarea placeholder="Update your Notes Here" />
+              <textarea
+                placeholder="Update your Notes Here"
+                {...register("message")}
+              />
+              <Error> {errors.message && errors?.mesaage.message} </Error>
             </InputCtrl>
           </CreateHold>
           <Button>
-            <button>Update Diary</button>
+            <button type="submit">Update Diary</button>
           </Button>
         </Card>
       </Wrapper>
@@ -62,7 +112,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const Card = styled.div`
+const Card = styled.form`
   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
     rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
   width: 500px;
@@ -91,46 +141,52 @@ const Title = styled.div`
 `;
 
 const CreateHold = styled.div``;
-const PrevImgDiv = styled.div`
-  height: 80px;
-  width: 80px;
-  background-color: aqua;
-  border-radius: 50%;
-  margin: 10px 0;
-
-  img {
-    height: 100%;
-    width: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-`;
-const ImageInput = styled.input`
-  display: none;
+const Error = styled.div`
+  font-size: x-small;
+  font-weight: bold;
+  color: red;
 `;
 
-const ImageLabel = styled.label`
-  padding: 6px 12px;
-  background-color: #000;
-  color: white;
-  border-radius: 3px;
-  transition: all 350ms;
-  font-size: 14px;
-  outline: none;
-  border: 0;
+// const PrevImgDiv = styled.div`
+//   height: 80px;
+//   width: 80px;
+//   background-color: aqua;
+//   border-radius: 50%;
+//   margin: 10px 0;
 
-  :hover {
-    cursor: pointer;
-    transform: scale(1.01);
-  }
-`;
+//   img {
+//     height: 100%;
+//     width: 100%;
+//     border-radius: 50%;
+//     object-fit: cover;
+//   }
+// `;
+// const ImageInput = styled.input`
+//   display: none;
+// `;
 
-const ImageHolder = styled.div`
-  width: 100%;
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-`;
+// const ImageLabel = styled.label`
+//   padding: 6px 12px;
+//   background-color: #000;
+//   color: white;
+//   border-radius: 3px;
+//   transition: all 350ms;
+//   font-size: 14px;
+//   outline: none;
+//   border: 0;
+
+//   :hover {
+//     cursor: pointer;
+//     transform: scale(1.01);
+//   }
+// `;
+
+// const ImageHolder = styled.div`
+//   width: 100%;
+//   align-items: center;
+//   display: flex;
+//   flex-direction: column;
+// `;
 const InputCtrl = styled.div`
   display: flex;
   flex-direction: column;
