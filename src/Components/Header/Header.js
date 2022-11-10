@@ -16,7 +16,7 @@ const Header = () => {
   return (
     <Container>
       <Wrapper>
-        <Logo to="/">
+        <Logo to="/" className="tour-logo">
           {" "}
           <LogoIcon /> Dya.
         </Logo>
@@ -24,7 +24,7 @@ const Header = () => {
         <Navigate>
           {userData ? (
             <Private>
-              <Nav to="/diary">
+              <Nav to="/diary" className="tour-diary">
                 {" "}
                 <AiFillWallet />
                 <small>Diaries</small>
@@ -33,7 +33,7 @@ const Header = () => {
           ) : null}
           {userData ? (
             <Private>
-              <Nav to="/newdiary">
+              <Nav to="/newdiary" className="tour-create">
                 {" "}
                 <RiAddCircleLine />
                 <small>Create</small>
@@ -42,7 +42,7 @@ const Header = () => {
           ) : null}
 
           {userData ? (
-            <Nav to="/favorite">
+            <Nav to="/favorite" className="tour-favourite">
               {" "}
               <AiFillHeart /> <small>Favourite</small>
             </Nav>
@@ -55,6 +55,7 @@ const Header = () => {
                 dispatch(signOut());
                 swal("Logged Out 😒", "Log Out Sucessful", "success");
               }}
+              className="tour-out"
             >
               <img src={userData?.avatar} alt="" />
             </Avatar>

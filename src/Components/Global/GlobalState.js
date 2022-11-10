@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   currentUser: null,
-  memories: [],
+  diaries: [],
   favorite: [],
 };
 
@@ -15,7 +15,7 @@ const GlobalState = createSlice({
     },
 
     addMomery: (state, { payload }) => {
-      state.memories = payload;
+      state.diaries = payload;
     },
 
     signOut: (state) => {

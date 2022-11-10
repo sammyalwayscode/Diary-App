@@ -7,8 +7,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import swal from "sweetalert";
 import { NavLink } from "react-router-dom";
-import Loading from "../LoadState";
-import HashLoader from "react-spinners/HashLoader";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
@@ -53,6 +51,8 @@ const SignUp = () => {
     const { userName, email, password } = value;
 
     const mainURL = "https://sam-diary.herokuapp.com";
+    // const mainURL = "http://localhost:2120";
+    // const mainURL = "https://tame-rose-stingray-robe.cyclic.app";
     const URL = `${mainURL}/api/diary/user/signup`;
 
     const formData = new FormData();
@@ -70,132 +70,124 @@ const SignUp = () => {
       },
     };
 
-    await axios.post(URL, formData, config).then((res) => {
-      console.log("Data:", res);
-    });
-    // .catch(
-    //   swal({
-    //     title: `A Error Occored`,
-    //     text: "Server Or NetWork Error",
-    //     icon: "error",
-    //   })
-    // );
-
-    setLoading(false);
-    swal({
-      title: `Welcome ${userName}`,
-      text: "You just Signeg Up Please proceed to Sign In",
-      icon: "success",
-      button: "Sign In Now",
-    });
-
-    navigate("/signin");
+    await axios
+      .post(URL, formData, config)
+      .then((res) => {
+        console.log("Data:", res);
+        swal({
+          title: `Welcome ${userName}`,
+          text: "You just Signed Up Please proceed to Sign In",
+          icon: "success",
+          button: "Sign In Now",
+        }).then(() => {
+          navigate("/signin");
+        });
+      })
+      .catch((error) => {
+        swal({
+          title: error.response.data.status,
+          text: "If you've not signed up before, Check if you've Uploaded an Image, Or maybe your network Connection",
+          icon: "error",
+        });
+      });
   });
 
   return (
-    <Ddiv>
-      {loading ? (
-        <Div className="sweet-loading">
-          <HashLoader loading={loading} size={100} />
-        </Div>
-      ) : null}
+    <Container>
+      <Wrapper>
+        <Card>
+          <MainTitle>
+            <Title>
+              <ImBooks /> DYA.
+            </Title>
 
-      <Container>
-        <Wrapper>
-          <Card>
-            <MainTitle>
-              <Title>
-                <ImBooks /> DYA.
-              </Title>
+            <SubTitle>
+              Best diary app, concept by <strong>OLORUNDA SAMUEL</strong>{" "}
+            </SubTitle>
+          </MainTitle>
 
-              <SubTitle>
-                Best diary app, concept by <strong>OLORUNDA SAMUEL</strong>{" "}
-              </SubTitle>
-            </MainTitle>
+          <SignUpHold onSubmit={onSummit} type="multipart/form-data">
+            <ImageHolder>
+              <PrevImgDiv>
+                <img src={image} alt="" />
+              </PrevImgDiv>
+              <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
+              <ImageInput
+                onChange={handleImage}
+                id="pix"
+                type="file"
+                accept="image/*"
+              />
+            </ImageHolder>
 
-            <SignUpHold onSubmit={onSummit} type="multipart/form-data">
-              <ImageHolder>
-                <PrevImgDiv>
-                  <img src={image} alt="" />
-                </PrevImgDiv>
-                <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
-                <ImageInput
-                  onChange={handleImage}
-                  id="pix"
-                  type="file"
-                  accept="image/*"
-                />
-              </ImageHolder>
+            <InputCtrl>
+              <span>User Name</span>
+              <input
+                placeholder="Enter Your UserName"
+                {...register("userName")}
+              />
+              <Error> {errors.username?.message} </Error>
+            </InputCtrl>
+            <InputCtrl>
+              <span>Your Email</span>
+              <input
+                placeholder="Enter Your Email Address"
+                {...register("email")}
+              />
+              <Error> {errors.email?.message} </Error>
+            </InputCtrl>
+            <InputCtrl>
+              <span>Password</span>
+              <input
+                type="password"
+                placeholder="Create a Super Meroable Password"
+                {...register("password")}
+              />
+              <Error> {errors.password?.message} </Error>
+            </InputCtrl>
+            <InputCtrl>
+              <span>Confirm Password</span>
+              <input
+                type="password"
+                placeholder="Confirm Your Password"
+                {...register("confirm")}
+              />
+              <Error> {errors.confirm?.message} </Error>
+            </InputCtrl>
+            <Button>
+              <button onClick={loadChange} type="submit">
+                Sign Up
+              </button>
+            </Button>
+            <NotUp bg>
+              Already have an Account???{" "}
+              <NavLink style={{ textDecoration: "none" }} to="/signin">
+                <span>Sign In</span>
+              </NavLink>
+            </NotUp>
+          </SignUpHold>
 
-              <InputCtrl>
-                <span>User Name</span>
-                <input
-                  placeholder="Enter Your UserName"
-                  {...register("userName")}
-                />
-                <Error> {errors.message && errors?.message.username} </Error>
-              </InputCtrl>
-              <InputCtrl>
-                <span>Your Email</span>
-                <input
-                  placeholder="Enter Your Email Address"
-                  {...register("email")}
-                />
-                <Error> {errors.message && errors?.message.email} </Error>
-              </InputCtrl>
-              <InputCtrl>
-                <span>Password</span>
-                <input
-                  type="password"
-                  placeholder="Create a Super Meroable Password"
-                  {...register("password")}
-                />
-                <Error> {errors.message && errors?.message.password} </Error>
-              </InputCtrl>
-              <InputCtrl>
-                <span>Confirm Password</span>
-                <input
-                  type="password"
-                  placeholder="Confirm Your Password"
-                  {...register("confirm")}
-                />
-                <Error> {errors.message && errors.message?.confirm} </Error>
-              </InputCtrl>
-              <Button>
-                <button onClick={loadChange} type="submit">
-                  Sign Up
-                </button>
-              </Button>
-              <NotUp bg>
-                Already have an Account???{" "}
-                <NavLink style={{ textDecoration: "none" }} to="/signin">
-                  <span>Sign In</span>
-                </NavLink>
-              </NotUp>
-            </SignUpHold>
-
-            <br />
-          </Card>
-        </Wrapper>
-      </Container>
-    </Ddiv>
+          <br />
+        </Card>
+      </Wrapper>
+    </Container>
   );
 };
 
 export default SignUp;
 
-const Ddiv = styled.div``;
+// const Ddiv = styled.div``;
 
-const Div = styled.div`
-  height: 90vh;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  z-index: 10;
-`;
+// const Div = styled.div`
+//   height: 90vh;
+//   width: 100%;
+//   background: rgba(0, 0, 0, 0.5);
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   position: absolute;
+//   z-index: 10;
+// `;
 
 const Container = styled.div`
   min-height: 89vh;

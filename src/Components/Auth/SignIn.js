@@ -32,21 +32,30 @@ const Signin = () => {
     console.log(value);
     const { email, password } = value;
     const mainURL = "https://sam-diary.herokuapp.com";
+    // const mainURL = "http://localhost:2120";
     const URL = `${mainURL}/api/diary/user/signin`;
 
-    await axios.post(URL, { email, password }).then((res) => {
-      // console.log(res.data.data);
-      dispatch(createUser(res.data.data));
-    });
-
-    swal({
-      title: `Signed In Sucessfully ✌️`,
-      text: "You Can Now Start Creating Awesome Diaries",
-      icon: "success",
-      button: "Proceed",
-    });
-
-    navigate("/diary");
+    await axios
+      .post(URL, { email, password })
+      .then((res) => {
+        // console.log(res.data.data);
+        dispatch(createUser(res.data.data));
+        swal({
+          title: `Signed In Sucessfully ✌️`,
+          text: "You Can Now Start Creating Awesome Diaries",
+          icon: "success",
+          button: "Proceed",
+        }).then(() => {
+          navigate("/newdiary");
+        });
+      })
+      .catch((error) => {
+        swal({
+          title: error.response.data.status,
+          text: "An Error Occoured, Do Check your network Connection",
+          icon: "error",
+        });
+      });
   });
 
   return (
