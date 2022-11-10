@@ -13,7 +13,7 @@ import { GrAddCircle } from "react-icons/gr";
 const Home = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.currentUser);
-  const memo = useSelector((state) => state.memories);
+  const memo = useSelector((state) => state.diaries);
 
   const id = user._id;
   const diy = user.diary;
@@ -22,6 +22,7 @@ const Home = () => {
   const onGetData = async () => {
     try {
       const mainURL = "https://sam-diary.herokuapp.com";
+      // const mainURL = "http://localhost:2120";
       const URL = `${mainURL}/api/userdiary/diary/${id}`;
 
       await axios.get(URL).then((res) => {
@@ -47,12 +48,13 @@ const Home = () => {
     <Container>
       <h1>All Diary List</h1>
       <Wrapper>
-        {memo === null ? (
+        {user === null ? (
           <NotContain>
             <Nott>
               <img src="/data.svg" alt="" />
               <strong>
-                Empty Diary List, Click <GrAddCircle /> To Create Your Diary
+                Empty Diary List, Click <GrAddCircle /> Create To Create Your
+                Diary
               </strong>
             </Nott>
           </NotContain>
@@ -95,11 +97,26 @@ const Home = () => {
                       </Icon2>
                       <Icon3
                         onClick={() => {
-                          swal(
-                            "Can't Preform Action",
-                            `Can't Delete ${props.title} now, Update Comming Soon`,
-                            "error"
-                          );
+                          swal({
+                            title: "Are you sure?",
+                            text: "Once deleted, you will not be able to recover this favorite file!",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                          }).then((willDelete) => {
+                            if (willDelete) {
+                              const mainURL = "https://sam-diary.herokuapp.com";
+                              const URL = `${mainURL}/api/userdiary/diary/${id}/${props._id}`;
+
+                              axios.delete(URL);
+                              swal("Poof! Favorite file has been deleted!", {
+                                icon: "success",
+                              });
+                              window.location.reload();
+                            } else {
+                              swal("Your favorite file is safe!");
+                            }
+                          });
                         }}
                       >
                         {" "}

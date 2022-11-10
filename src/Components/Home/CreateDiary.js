@@ -28,7 +28,7 @@ const CreateDiary = () => {
   };
 
   const formSchema = yup.object().shape({
-    title: yup.string().required("This FFiled Cannot Be Empty"),
+    title: yup.string().required("This Filed Cannot Be Empty"),
     message: yup.string().required("This Field Cannot Be Empty"),
   });
 
@@ -51,6 +51,7 @@ const CreateDiary = () => {
     console.log(value);
     const { message, title } = value;
     const mainURL = "https://sam-diary.herokuapp.com";
+    // const mainURL = "http://localhost:2120";
     const URL = `${mainURL}/api/userdiary/diary/${id}`;
 
     const formData = new FormData();
@@ -67,21 +68,24 @@ const CreateDiary = () => {
       },
     };
 
-    await axios.post(URL, formData, config).then((res) => {
-      console.log("Data: ", res);
-    });
-    // .catch(
-    //   swal({
-    //     title: `A Error Occored`,
-    //     text: "Server Or NetWork Error",
-    //     icon: "error",
-    //   })
-    // );
-    setLoading(false);
-
-    swal("Great! 😁", "Diary Sucessfully Created", "success");
-
-    navigate("/diary");
+    await axios
+      .post(URL, formData, config)
+      .then((res) => {
+        console.log("Data: ", res);
+        swal("Great! 😁", "Diary Sucessfully Created", "success").then(() => {
+          setLoading(false);
+          navigate("/diary");
+        });
+      })
+      .catch((error) => {
+        swal({
+          title: " An Error Occoured",
+          text: "Be Sure to Upload an Image, also check your Network Connection",
+          icon: "error",
+        }).then(() => {
+          setLoading(false);
+        });
+      });
   });
 
   return (
@@ -100,6 +104,7 @@ const CreateDiary = () => {
                 <ImBooks /> DYA.
               </Title>
             </MainTitle>
+            <strong>Create A Diary</strong>
             <CreateHold>
               <ImageHolder>
                 <PrevImgDiv>
@@ -121,7 +126,7 @@ const CreateDiary = () => {
                   placeholder="What's the title of your notes"
                   {...register("title")}
                 />
-                <Error> {errors.message && errors.mesaage.title} </Error>
+                <Error> {errors.title?.mesaage} </Error>
               </InputCtrl>
               <InputCtrl>
                 <span>Notes</span>
@@ -129,7 +134,7 @@ const CreateDiary = () => {
                   placeholder="Write your Notes Here"
                   {...register("message")}
                 />
-                <Error> {errors.message && errors.mesaage.message} </Error>
+                <Error> {errors.message?.mesaage} </Error>
               </InputCtrl>
             </CreateHold>
             <Button>

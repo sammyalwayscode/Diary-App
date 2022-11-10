@@ -38,14 +38,17 @@ const EditDiary = () => {
       .patch(URL, { title, message })
       .then((res) => {
         console.log("Edited", res);
+        swal("Great 👍", "Diary Updated Sucessfully", "success").then(() => {
+          navigate("/diary");
+        });
       })
-      .catch(() => {
-        console.log("Couldn't Edit");
+      .catch((error) => {
+        swal({
+          title: " An Error Occoured",
+          text: error.response.data.status,
+          icon: "error",
+        });
       });
-
-    swal("Great 👍", "Diary Updated Sucessfully", "success");
-
-    navigate("/diary");
   });
 
   return (
@@ -69,7 +72,7 @@ const EditDiary = () => {
             <InputCtrl>
               <span>Title</span>
               <input placeholder="Update your Title" {...register("title")} />
-              <Error> {errors.message && errors?.mesaage.title} </Error>
+              <Error> {errors.title?.mesaage} </Error>
             </InputCtrl>
             <InputCtrl>
               <span>Notes</span>
@@ -77,7 +80,7 @@ const EditDiary = () => {
                 placeholder="Update your Notes Here"
                 {...register("message")}
               />
-              <Error> {errors.message && errors?.mesaage.message} </Error>
+              <Error> {errors.message?.mesaage} </Error>
             </InputCtrl>
           </CreateHold>
           <Button>
