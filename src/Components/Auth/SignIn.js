@@ -9,10 +9,14 @@ import { useDispatch } from "react-redux";
 import { createUser } from "../Global/GlobalState";
 import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
+import LoadState from "../LoadState";
+import { useState } from "react";
 
 const Signin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const formSchema = yup.object().shape({
     email: yup.string().email().required("This Field Is Required"),
@@ -34,6 +38,7 @@ const Signin = () => {
     const mainURL = "https://sam-diary.herokuapp.com";
     // const mainURL = "http://localhost:2120";
     const URL = `${mainURL}/api/diary/user/signin`;
+    setLoading(true);
 
     await axios
       .post(URL, { email, password })
@@ -48,6 +53,7 @@ const Signin = () => {
         }).then(() => {
           navigate("/newdiary");
         });
+        setLoading(false);
       })
       .catch((error) => {
         swal({
@@ -55,11 +61,13 @@ const Signin = () => {
           text: "An Error Occoured, Do Check your network Connection",
           icon: "error",
         });
+        setLoading(false);
       });
   });
 
   return (
     <Container>
+      {loading ? <LoadState /> : null}
       <Wrapper>
         <Card>
           <MainTitle>

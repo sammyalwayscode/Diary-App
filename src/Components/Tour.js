@@ -2,10 +2,10 @@ import React from "react";
 import JoyRide from "react-joyride";
 
 const TOUR_STEPS = [
-  {
-    target: ".tour-logo",
-    content: "This is the App logo, You can always click here to go home",
-  },
+  // {
+  //   target: ".tour-logo",
+  //   content: "This is the App logo, You can always click here to go home",
+  // },
   {
     target: ".tour-diary",
     content: "This is the Diary Nav, Click to view All Diaries Created",
