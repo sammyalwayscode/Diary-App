@@ -8,18 +8,13 @@ import axios from "axios";
 import swal from "sweetalert";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import LoadState from "../LoadState";
 
 const SignUp = () => {
   const [image, setImage] = useState("/avatar.gif");
   const [avatar, setAvatar] = useState("");
-  let [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const loadChange = () => {
-    setLoading(true);
-  };
-
-  console.log(loading);
 
   const formSchema = yup.object().shape({
     userName: yup.string().required("Please Enter Your Username"),
@@ -54,6 +49,7 @@ const SignUp = () => {
     // const mainURL = "http://localhost:2120";
     // const mainURL = "https://tame-rose-stingray-robe.cyclic.app";
     const URL = `${mainURL}/api/diary/user/signup`;
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("userName", userName);
@@ -82,6 +78,7 @@ const SignUp = () => {
         }).then(() => {
           navigate("/signin");
         });
+        setLoading(false);
       })
       .catch((error) => {
         swal({
@@ -89,11 +86,13 @@ const SignUp = () => {
           text: "If you've not signed up before, Check if you've Uploaded an Image, Or maybe your network Connection",
           icon: "error",
         });
+        setLoading(false);
       });
   });
 
   return (
     <Container>
+      {loading ? <LoadState /> : null}
       <Wrapper>
         <Card>
           <MainTitle>
@@ -155,9 +154,7 @@ const SignUp = () => {
               <Error> {errors.confirm?.message} </Error>
             </InputCtrl>
             <Button>
-              <button onClick={loadChange} type="submit">
-                Sign Up
-              </button>
+              <button type="submit">Sign Up</button>
             </Button>
             <NotUp bg>
               Already have an Account???{" "}

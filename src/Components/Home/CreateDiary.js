@@ -9,6 +9,7 @@ import axios from "axios";
 import swal from "sweetalert";
 import HashLoader from "react-spinners/HashLoader";
 import { useNavigate } from "react-router-dom";
+import LoadState from "../LoadState";
 
 const CreateDiary = () => {
   const user = useSelector((state) => state.currentUser);
@@ -23,9 +24,6 @@ const CreateDiary = () => {
   const [avatar, setAvatar] = useState("");
 
   let [loading, setLoading] = useState(false);
-  const loadChange = () => {
-    setLoading(true);
-  };
 
   const formSchema = yup.object().shape({
     title: yup.string().required("This Filed Cannot Be Empty"),
@@ -53,6 +51,7 @@ const CreateDiary = () => {
     const mainURL = "https://sam-diary.herokuapp.com";
     // const mainURL = "http://localhost:2120";
     const URL = `${mainURL}/api/userdiary/diary/${id}`;
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("title", title);
@@ -73,79 +72,69 @@ const CreateDiary = () => {
       .then((res) => {
         console.log("Data: ", res);
         swal("Great! 😁", "Diary Sucessfully Created", "success").then(() => {
-          setLoading(false);
           navigate("/diary");
         });
+        setLoading(false);
       })
       .catch((error) => {
         swal({
           title: " An Error Occoured",
           text: "Be Sure to Upload an Image, also check your Network Connection",
           icon: "error",
-        }).then(() => {
-          setLoading(false);
         });
+        setLoading(false);
       });
   });
 
   return (
-    <>
-      {loading ? (
-        <Div className="sweet-loading">
-          <HashLoader loading={loading} size={100} />
-        </Div>
-      ) : null}
+    <Container>
+      {loading ? <LoadState /> : null}
+      <Wrapper>
+        <Card onSubmit={onSubmit}>
+          <MainTitle>
+            <Title>
+              <ImBooks /> DYA.
+            </Title>
+          </MainTitle>
+          <strong>Create A Diary</strong>
+          <CreateHold>
+            <ImageHolder>
+              <PrevImgDiv>
+                <img src={image} alt="" />
+              </PrevImgDiv>
+              <small>Important!!!</small>
+              <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
+              <ImageInput
+                id="pix"
+                type="file"
+                accept="image/*"
+                onChange={handleImage}
+              />
+            </ImageHolder>
 
-      <Container>
-        <Wrapper>
-          <Card onSubmit={onSubmit}>
-            <MainTitle>
-              <Title>
-                <ImBooks /> DYA.
-              </Title>
-            </MainTitle>
-            <strong>Create A Diary</strong>
-            <CreateHold>
-              <ImageHolder>
-                <PrevImgDiv>
-                  <img src={image} alt="" />
-                </PrevImgDiv>
-                <small>Important!!!</small>
-                <ImageLabel htmlFor="pix">Upload your Image</ImageLabel>
-                <ImageInput
-                  id="pix"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImage}
-                />
-              </ImageHolder>
-
-              <InputCtrl>
-                <span>Title</span>
-                <input
-                  placeholder="What's the title of your notes"
-                  {...register("title")}
-                />
-                <Error> {errors.title?.mesaage} </Error>
-              </InputCtrl>
-              <InputCtrl>
-                <span>Notes</span>
-                <textarea
-                  placeholder="Write your Notes Here"
-                  {...register("message")}
-                />
-                <Error> {errors.message?.mesaage} </Error>
-              </InputCtrl>
-            </CreateHold>
-            <Button>
-              <button onClick={loadChange} type="submit">
-                Create Diary
-              </button>
-            </Button>
-          </Card>
-        </Wrapper>
-      </Container>
-    </>
+            <InputCtrl>
+              <span>Title</span>
+              <input
+                placeholder="What's the title of your notes"
+                {...register("title")}
+              />
+              <Error> {errors.title?.mesaage} </Error>
+            </InputCtrl>
+            <InputCtrl>
+              <span>Notes</span>
+              <textarea
+                placeholder="Write your Notes Here"
+                {...register("message")}
+              />
+              <Error> {errors.message?.mesaage} </Error>
+            </InputCtrl>
+          </CreateHold>
+          <Button>
+            <button type="submit">Create Diary</button>
+          </Button>
+        </Card>
+      </Wrapper>
+    </Container>
   );
 };
 

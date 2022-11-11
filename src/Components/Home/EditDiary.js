@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { ImBooks } from "react-icons/im";
 import * as yup from "yup";
@@ -8,10 +8,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import swal from "sweetalert";
+import LoadState from "../LoadState";
 
 const EditDiary = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  let [loading, setLoading] = useState(false);
   console.log(id);
   const userId = useSelector((state) => state.currentUser);
 
@@ -33,6 +35,7 @@ const EditDiary = () => {
     const { title, message } = value;
     const mainURL = "https://sam-diary.herokuapp.com";
     const URL = `${mainURL}/api/userdiary/diary/${userId._id}/${id}`;
+    setLoading(true);
 
     await axios
       .patch(URL, { title, message })
@@ -41,6 +44,7 @@ const EditDiary = () => {
         swal("Great 👍", "Diary Updated Sucessfully", "success").then(() => {
           navigate("/diary");
         });
+        setLoading(false);
       })
       .catch((error) => {
         swal({
@@ -48,11 +52,13 @@ const EditDiary = () => {
           text: error.response.data.status,
           icon: "error",
         });
+        setLoading(false);
       });
   });
 
   return (
     <Container>
+      {loading ? <LoadState /> : null}
       <Wrapper>
         <Card onSubmit={onSubmit}>
           <MainTitle>

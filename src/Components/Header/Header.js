@@ -16,7 +16,7 @@ const Header = () => {
   return (
     <Container>
       <Wrapper>
-        <Logo to="/" className="tour-logo">
+        <Logo to="/">
           {" "}
           <LogoIcon /> Dya.
         </Logo>
